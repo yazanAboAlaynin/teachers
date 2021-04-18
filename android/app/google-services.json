@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "264743021704",
+    "project_id": "teachers-a5fc4",
+    "storage_bucket": "teachers-a5fc4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:264743021704:android:696726e395051145fc033d",
+        "android_client_info": {
+          "package_name": "com.yazan.teachers"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "264743021704-5smq1d03o2tb5c23uop5r142tef4jp25.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjNysGsfOZMVZCao1syQwCu5mMW-NDAbU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "264743021704-5smq1d03o2tb5c23uop5r142tef4jp25.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
