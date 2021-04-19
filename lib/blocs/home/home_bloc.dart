@@ -27,6 +27,17 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       } catch (_) {
         yield HomeLoadFailure();
       }
+    } else if (event is RefreshTeachersRequested) {
+      try {
+        List<Teacher> teachers = await firebaseService.getTeachers();
+        teachers.sort((a, b) => a.rating < b.rating ? 1 : 0);
+
+        yield TeachersLoadSuccess(
+          teachers: teachers,
+        );
+      } catch (_) {
+        yield HomeLoadFailure();
+      }
     } else if (event is TeacherReviewsRequested) {
       yield HomeLoadInProgress();
       try {

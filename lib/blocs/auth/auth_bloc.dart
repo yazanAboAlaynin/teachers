@@ -47,46 +47,33 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       } catch (_) {
         yield AuthLoadFailure();
       }
-    }
-    //  else if (event is RegisterRequested) {
-    //   yield AuthLoadInProgress();
-    //   try {
-    //     var data = {
-    //       'email': event.email,
-    //       'password': event.password,
-    //       'phone': event.phone,
-    //       'first_name': event.fname,
-    //       'last_name': event.lname,
-    //       'city_id': event.city_id
-    //     };
-    //     Map ans = await authApi.register(data);
-    //     if (ans['status']) {
-    //       yield NotAuthenticated();
-    //     } else {
-    //       yield NotAuthenticated();
-    //     }
-    //   } catch (_) {
-    //     yield AuthLoadFailure();
-    //   }
-    // } else if (event is LogoutRequested) {
-    //   yield AuthLoadInProgress();
-    //   try {
-    //     SharedPreferences sharedPreferences =
-    //         await SharedPreferences.getInstance();
-    //     sharedPreferences.remove('token');
-    //     sharedPreferences.setBool('isAuth', false);
-    //     sharedPreferences.remove('user');
-    //     bool ans = false;
-    //     ISAuth = false;
+    } else if (event is RegisterRequested) {
+      yield AuthLoadInProgress();
+      try {
+        bool ans = await firebaseService.register(event.email, event.password);
+        if (ans) {
+          yield Authenticated();
+        } else {
+          yield NotAuthenticated();
+        }
+      } catch (_) {
+        yield AuthLoadFailure();
+      }
+    } else if (event is LogoutRequested) {
+      yield AuthLoadInProgress();
+      try {
+        SharedPreferences sharedPreferences =
+            await SharedPreferences.getInstance();
 
-    //     if (ans) {
-    //       yield Authenticated();
-    //     } else {
-    //       yield NotAuthenticated();
-    //     }
-    //   } catch (_) {
-    //     yield AuthLoadFailure();
-    //   }
-    // }
+        sharedPreferences.setBool('isAuth', false);
+        sharedPreferences.remove('user_id');
+
+        ISAuth = false;
+
+        yield NotAuthenticated();
+      } catch (_) {
+        yield AuthLoadFailure();
+      }
+    }
   }
 }

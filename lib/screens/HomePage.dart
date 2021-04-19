@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
@@ -40,6 +41,30 @@ class _HomePageState extends State<HomePage> {
         title: Text('Teachers'),
         centerTitle: true,
         backgroundColor: Config.primaryColor,
+        actions: [
+          BlocBuilder(
+            cubit: authBloc,
+            builder: (context, state) {
+              if (state is Authenticated) {
+                return IconButton(
+                  icon: Icon(Icons.logout),
+                  onPressed: () {
+                    authBloc.add(LogoutRequested());
+                  },
+                );
+              }
+              if (state is NotAuthenticated) {
+                return IconButton(
+                  icon: Icon(Icons.login),
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/login');
+                  },
+                );
+              }
+              return Container();
+            },
+          ),
+        ],
       ),
       body: BlocBuilder(
         cubit: homeBloc,
@@ -65,8 +90,12 @@ class _HomePageState extends State<HomePage> {
                 }
               }
             }
-            return SingleChildScrollView(
-              child: Column(
+            return RefreshIndicator(
+              onRefresh: () {
+                homeBloc.add(RefreshTeachersRequested());
+                return Future.delayed(Duration(seconds: 1));
+              },
+              child: ListView(
                 children: teachers
                     .map(
                       (e) => TeacherCard(
@@ -102,6 +131,7 @@ class _TeacherCardState extends State<TeacherCard> {
   double rating = 1;
 
   TextEditingController review = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -154,66 +184,80 @@ class _TeacherCardState extends State<TeacherCard> {
                               content: Container(
                                 height: 300,
                                 child: SingleChildScrollView(
-                                  child: Column(
-                                    children: [
-                                      SmoothStarRating(
-                                        rating: rating,
-                                        size: sizeAware.width * 0.08,
-                                        filledIconData: Icons.star,
-                                        halfFilledIconData: Icons.star_half,
-                                        defaultIconData: Icons.star_border,
-                                        starCount: 5,
-                                        allowHalfRating: false,
-                                        spacing: 2.0,
-                                        color: Colors.amber,
-                                        onRated: (value) {
-                                          value = value.roundToDouble();
-                                          print("rating value -> $value");
-                                          // setState(() {
-                                          rating = value;
-                                          // });
-                                        },
-                                      ),
-                                      SizedBox(
-                                        height: 30,
-                                      ),
-                                      TextFormField(
-                                        decoration: InputDecoration(
-                                          filled: true,
-                                          hintText: 'Write your review here...',
-                                          fillColor: Colors.grey[100],
-                                          border: InputBorder.none,
+                                  child: Form(
+                                    key: _formKey,
+                                    child: Column(
+                                      children: [
+                                        SmoothStarRating(
+                                          rating: rating,
+                                          size: sizeAware.width * 0.08,
+                                          filledIconData: Icons.star,
+                                          halfFilledIconData: Icons.star_half,
+                                          defaultIconData: Icons.star_border,
+                                          starCount: 5,
+                                          allowHalfRating: false,
+                                          spacing: 2.0,
+                                          color: Colors.amber,
+                                          onRated: (value) {
+                                            value = value.roundToDouble();
+                                            print("rating value -> $value");
+                                            // setState(() {
+                                            rating = value;
+                                            // });
+                                          },
                                         ),
-                                        controller: review,
-                                        minLines: 5,
-                                        maxLines: 10,
-                                      ),
-                                      SizedBox(
-                                        height: 30,
-                                      ),
-                                      RaisedButton(
-                                        color: Config.primaryColor,
-                                        onPressed: () {
-                                          if (review.text.length > 0) {
-                                            widget.homeBloc
-                                                .add(StoreReviewRequested(
-                                              ratedTeacher: widget.teacher.id,
-                                              date: DateTime.now(),
-                                              rating: rating,
-                                              ratingUser: ID,
-                                              review: review.text,
-                                            ));
-                                            Navigator.pop(context);
-                                          }
-                                        },
-                                        child: Text(
-                                          'ADD',
-                                          style: TextStyle(
-                                            color: Colors.white,
+                                        SizedBox(
+                                          height: 30,
+                                        ),
+                                        TextFormField(
+                                          inputFormatters: [
+                                            LengthLimitingTextInputFormatter(
+                                                10),
+                                          ],
+                                          decoration: InputDecoration(
+                                            filled: true,
+                                            hintText:
+                                                'Write your review here...',
+                                            fillColor: Colors.grey[100],
+                                          ),
+                                          controller: review,
+                                          validator: (value) => value.length ==
+                                                  0
+                                              ? "Review is required"
+                                              : value.length > 10
+                                                  ? 'Must be less than 240 charachter'
+                                                  : null,
+                                          minLines: 5,
+                                          maxLines: 10,
+                                        ),
+                                        SizedBox(
+                                          height: 30,
+                                        ),
+                                        RaisedButton(
+                                          color: Config.primaryColor,
+                                          onPressed: () {
+                                            if (_formKey.currentState
+                                                .validate()) {
+                                              widget.homeBloc
+                                                  .add(StoreReviewRequested(
+                                                ratedTeacher: widget.teacher.id,
+                                                date: DateTime.now(),
+                                                rating: rating,
+                                                ratingUser: ID,
+                                                review: review.text,
+                                              ));
+                                              Navigator.pop(context);
+                                            }
+                                          },
+                                          child: Text(
+                                            'ADD',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),

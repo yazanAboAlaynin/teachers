@@ -58,6 +58,22 @@ class FirebaseService {
     return false;
   }
 
+  Future<bool> register(email, password) async {
+    final User user = (await _auth.createUserWithEmailAndPassword(
+            email: email, password: password))
+        .user;
+
+    if (user != null) {
+      SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
+      sharedPreferences.setString('user_id', user.uid);
+      sharedPreferences.setBool('isAuth', true);
+      ID = user.uid;
+      return true;
+    }
+    return false;
+  }
+
   Future<Teacher> addReview(
       {ratedTeacher, ratingUser, rating, review, date}) async {
     DocumentReference ref =

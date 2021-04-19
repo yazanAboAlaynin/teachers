@@ -6,12 +6,12 @@ import 'package:teachers/blocs/auth/auth_state.dart';
 
 import '../config.dart';
 
-class LoginPage extends StatefulWidget {
+class RegisterPage extends StatefulWidget {
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _RegisterPageState createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegisterPageState extends State<RegisterPage> {
   bool isVis = true;
 
   TextEditingController emailTextEditingController = TextEditingController();
@@ -49,7 +49,7 @@ class _LoginPageState extends State<LoginPage> {
                       height: sizeAware.height * 0.1,
                     ),
                     Text(
-                      'SIGN IN',
+                      'SIGN UP',
                       style: TextStyle(
                           color: Config.primaryColor,
                           fontSize: 30,
@@ -106,7 +106,7 @@ class _LoginPageState extends State<LoginPage> {
                                 onTap: () {
                                   if (_formKey.currentState.validate()) {
                                     authBloc.add(
-                                      LoginRequested(
+                                      RegisterRequested(
                                         email: emailTextEditingController.text
                                             .trim(),
                                         password: passwordTextEditingController
@@ -138,7 +138,7 @@ class _LoginPageState extends State<LoginPage> {
                                                     CircularProgressIndicator(),
                                               )
                                             : Text(
-                                                'Login',
+                                                'Register',
                                                 style: TextStyle(
                                                   fontSize: 20,
                                                   color: Colors.white,
@@ -157,8 +157,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           GestureDetector(
                             onTap: () {
-                              Navigator.pushReplacementNamed(
-                                  context, '/register');
+                              Navigator.pushReplacementNamed(context, '/login');
                             },
                             child: Container(
                               width: sizeAware.width,
@@ -166,7 +165,7 @@ class _LoginPageState extends State<LoginPage> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
-                                    'Dont have an account?',
+                                    'Already have an account?',
                                     style: TextStyle(
                                       fontSize: 17,
                                       fontWeight: FontWeight.bold,
@@ -174,7 +173,7 @@ class _LoginPageState extends State<LoginPage> {
                                     ),
                                   ),
                                   Text(
-                                    'Sign Up',
+                                    'Sign In',
                                     style: TextStyle(
                                       fontSize: 17,
                                       color: Config.primaryColor,

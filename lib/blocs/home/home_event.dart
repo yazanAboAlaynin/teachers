@@ -12,6 +12,13 @@ class TeachersRequested extends HomeEvent {
   List<Object> get props => [];
 }
 
+class RefreshTeachersRequested extends HomeEvent {
+  const RefreshTeachersRequested();
+
+  @override
+  List<Object> get props => [];
+}
+
 class TeacherReviewsRequested extends HomeEvent {
   final String id;
   const TeacherReviewsRequested({this.id});
