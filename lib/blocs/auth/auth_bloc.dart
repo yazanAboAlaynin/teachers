@@ -16,6 +16,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   @override
   Stream<AuthState> mapEventToState(AuthEvent event) async* {
     if (event is AuthRequested) {
+      // check the auth status
       yield AuthLoadInProgress();
       try {
         SharedPreferences sharedPreferences =

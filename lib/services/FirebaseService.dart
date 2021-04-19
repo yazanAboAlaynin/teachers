@@ -8,6 +8,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 class FirebaseService {
   FirebaseAuth _auth = FirebaseAuth.instance;
 
+  //get all teachers
   Future<List<Teacher>> getTeachers() async {
     QuerySnapshot teachers =
         await FirebaseFirestore.instance.collection('teachers').get();
@@ -23,6 +24,7 @@ class FirebaseService {
         .toList();
   }
 
+  //get reviews of single teacher
   Future<List<Review>> getTeacherReviews(teacher_id) async {
     QuerySnapshot reviews = await FirebaseFirestore.instance
         .collection('reviews')
@@ -43,37 +45,54 @@ class FirebaseService {
   }
 
   Future<bool> login(email, password) async {
-    final User user = (await _auth.signInWithEmailAndPassword(
-            email: email, password: password))
-        .user;
+    try {
+      final User user = (await _auth.signInWithEmailAndPassword(
+              email: email, password: password))
+          .user;
 
-    if (user != null) {
-      SharedPreferences sharedPreferences =
-          await SharedPreferences.getInstance();
-      sharedPreferences.setString('user_id', user.uid);
-      sharedPreferences.setBool('isAuth', true);
-      ID = user.uid;
-      return true;
-    }
+      if (user != null) {
+        SharedPreferences sharedPreferences =
+            await SharedPreferences.getInstance();
+        sharedPreferences.setString('user_id', user.uid);
+        sharedPreferences.setBool('isAuth', true);
+        ID = user.uid;
+        return true;
+      }
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        print('No user found for that email.');
+      } else if (e.code == 'wrong-password') {
+        print('Wrong password provided for that user.');
+      }
+    } catch (_) {}
     return false;
   }
 
   Future<bool> register(email, password) async {
-    final User user = (await _auth.createUserWithEmailAndPassword(
-            email: email, password: password))
-        .user;
+    try {
+      final User user = (await _auth.createUserWithEmailAndPassword(
+              email: email, password: password))
+          .user;
 
-    if (user != null) {
-      SharedPreferences sharedPreferences =
-          await SharedPreferences.getInstance();
-      sharedPreferences.setString('user_id', user.uid);
-      sharedPreferences.setBool('isAuth', true);
-      ID = user.uid;
-      return true;
-    }
+      if (user != null) {
+        SharedPreferences sharedPreferences =
+            await SharedPreferences.getInstance();
+        sharedPreferences.setString('user_id', user.uid);
+        sharedPreferences.setBool('isAuth', true);
+        ID = user.uid;
+        return true;
+      }
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        print('No user found for that email.');
+      } else if (e.code == 'wrong-password') {
+        print('Wrong password provided for that user.');
+      }
+    } catch (_) {}
     return false;
   }
 
+  // add review for teacher
   Future<Teacher> addReview(
       {ratedTeacher, ratingUser, rating, review, date}) async {
     DocumentReference ref =
@@ -84,6 +103,7 @@ class FirebaseService {
       'review': review,
       'date': date,
     });
+    //get all teacher reviews to calculate the new rating avg
     QuerySnapshot reviews = await FirebaseFirestore.instance
         .collection('reviews')
         .where("ratedTeacher", isEqualTo: ratedTeacher)
@@ -94,7 +114,7 @@ class FirebaseService {
       avg += e.data()['rating'];
     });
     avg /= reviews.docs.length;
-
+    //update teacher rating
     await FirebaseFirestore.instance
         .collection("teachers")
         .doc(ratedTeacher)

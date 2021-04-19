@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:teachers/blocs/auth/auth_bloc.dart';
 import 'package:teachers/blocs/auth/auth_event.dart';
 import 'package:teachers/blocs/auth/auth_state.dart';
@@ -26,7 +27,11 @@ class _LoginPageState extends State<LoginPage> {
       cubit: authBloc,
       listener: (context, state) {
         if (state is Authenticated) {
+          Fluttertoast.showToast(msg: 'you are logged in');
           Navigator.popUntil(context, (route) => route.isFirst);
+        }
+        if (state is NotAuthenticated) {
+          Fluttertoast.showToast(msg: 'Wrong email or password');
         }
       },
       child: Scaffold(

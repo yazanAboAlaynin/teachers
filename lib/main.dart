@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
-        routes: Routes.getAll(),
+        routes: Routes.getAll(), //get all routes
         initialRoute: '/homePage',
       ),
     );
