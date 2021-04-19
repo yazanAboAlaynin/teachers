@@ -111,7 +111,7 @@ class _SingleTeacherPageState extends State<SingleTeacherPage> {
                             reviews = state.reviews;
                             return reviews.length == 0
                                 ? Center(
-                                    child: Text('No data'),
+                                    child: Text('No reviews'),
                                   )
                                 : ListView(
                                     shrinkWrap: true,
