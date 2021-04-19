@@ -11,8 +11,6 @@ class AuthLoadInProgress extends AuthState {}
 
 class Authenticated extends AuthState {}
 
-class NotAuthenticated extends AuthState {
-  NotAuthenticated();
-}
+class NotAuthenticated extends AuthState {}
 
 class AuthLoadFailure extends AuthState {}

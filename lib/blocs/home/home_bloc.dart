@@ -17,6 +17,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   @override
   Stream<HomeState> mapEventToState(HomeEvent event) async* {
     if (event is TeachersRequested) {
+      //get teachers list
       yield HomeLoadInProgress();
       try {
         List<Teacher> teachers = await firebaseService.getTeachers();
@@ -28,6 +29,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         yield HomeLoadFailure();
       }
     } else if (event is RefreshTeachersRequested) {
+      //refresh teachers list and sort it
       try {
         List<Teacher> teachers = await firebaseService.getTeachers();
         teachers.sort((a, b) => a.rating < b.rating ? 1 : 0);
@@ -39,6 +41,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         yield HomeLoadFailure();
       }
     } else if (event is TeacherReviewsRequested) {
+      //get single teacher reviews
       yield HomeLoadInProgress();
       try {
         List<Review> reviews =
@@ -51,6 +54,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         yield HomeLoadFailure();
       }
     } else if (event is StoreReviewRequested) {
+      //store review for teacher
       yield HomeLoadInProgress();
       try {
         Teacher teacher = await firebaseService.addReview(
